@@ -60,6 +60,7 @@ def main():
     balls.add(ball)
 
     # Show start screen to select difficulty
+    # TODO: change the initial page -> lower initial_speed_factor in ball.py
     input.running = scene.start(screen, ball)     # start screen returns running flag
     level.setup(scene, ball)
 
@@ -95,6 +96,8 @@ def main():
         moving_sprites.draw(screen)  # draw moving sprites
 
         # Show game over screen if the score reaches WIN_SCORE, reset everything if replay == TRUE
+        # TODO: replace the classical computer part to the opponent
+        # TODO: update the gameover scene
         if ball.score.get_score(CLASSICAL_COMPUTER) >= WIN_SCORE:
             scene.gameover(screen, CLASSICAL_COMPUTER)
             scene.replay(screen, ball.score, level.circuit_grid_model, level.circuit_grid)
@@ -106,6 +109,8 @@ def main():
             input.update_paddle(level, screen, scene)
 
         # computer paddle movement
+        # TODO: change this part as an opponent move
+        # TODO: make a server for saving each next position of the opponent
         if pygame.time.get_ticks() - old_clock > 300:
             level.left_paddle.rect.y = ball.get_ypos() - level.statevector_grid.block_size/2 \
                                     + random.randint(-WIDTH_UNIT*4, WIDTH_UNIT*4)
@@ -121,6 +126,8 @@ def main():
             circuit = level.circuit_grid_model.compute_circuit()
             pos = level.statevector_grid.paddle_after_measurement(circuit, scene.qubit_num, 1)
             level.right_statevector.arrange()
+
+            # TODO: send pos to the server
 
             # paddle after measurement
             level.right_paddle.rect.y = pos * ball.screenheight/(2**scene.qubit_num)
