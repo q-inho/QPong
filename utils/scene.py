@@ -34,6 +34,13 @@ class Scene:
         self.restart = False
         self.qubit_num = 3
 
+    def waiting(self, screen):
+        """Show waiting screen"""
+        credit_text = "Waiting for Player..."
+        text = REPLAY_FONT.render(credit_text, 5, WHITE)
+        text_pos = text.get_rect(center=(WINDOW_WIDTH/2, WIDTH_UNIT * 30))
+        screen.blit(text, text_pos)
+
     def start(self, screen, ball):
         """Show start screen"""
 

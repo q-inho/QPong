@@ -79,12 +79,31 @@ def main():
     # a valuable to record the time when the paddle is measured
     measure_time = 100000
 
+    # player number
+    n = Network()
+    player = int(n.getP())
+    print("You are player", player)
+
     # Main Loop
     while input.running:
         # set maximum frame rate
         clock.tick(60)
         # refill whole screen with black color at each frame
         screen.fill(BLACK)
+        
+        # receive game data
+        # TODO: end sync
+        try:
+            game = n.send("get")
+        except:
+            print("get: couldn't get game")
+            break
+
+        # TODO: draw the watiting page if not connected
+        if not(game.connected()):
+            scene.waiting(screen)
+            pygame.display.flip()
+            continue
 
         ball.update()  # update ball position
         scene.dashed_line(screen, ball)  # draw dashed line in the middle of the screen
@@ -102,15 +121,25 @@ def main():
             scene.gameover(screen, CLASSICAL_COMPUTER)
             scene.replay(screen, ball.score, level.circuit_grid_model, level.circuit_grid)
             input.update_paddle(level, screen, scene)
+            try:
+                game = n.send("reset")
+            except:
+                print("reset: couldn't get game")
+                break
 
         if ball.score.get_score(QUANTUM_COMPUTER) >= WIN_SCORE:
             scene.gameover(screen, QUANTUM_COMPUTER)
             scene.replay(screen, ball.score, level.circuit_grid_model, level.circuit_grid)
             input.update_paddle(level, screen, scene)
+            try:
+                game = n.send("reset")
+            except:
+                print("reset: couldn't get game")
+                break
 
         # computer paddle movement
         # TODO: change this part as an opponent move
-        # TODO: make a server for saving each next position of the opponent
+        # TODO: delete its position after the move
         if pygame.time.get_ticks() - old_clock > 300:
             level.left_paddle.rect.y = ball.get_ypos() - level.statevector_grid.block_size/2 \
                                     + random.randint(-WIDTH_UNIT*4, WIDTH_UNIT*4)
@@ -120,6 +149,7 @@ def main():
         input.handle_input(level, screen, scene)
 
         # check ball location and decide what to do
+        # TODO: update game score
         ball.action()
 
         if ball.ball_action == MEASURE_RIGHT:
@@ -127,7 +157,12 @@ def main():
             pos = level.statevector_grid.paddle_after_measurement(circuit, scene.qubit_num, 1)
             level.right_statevector.arrange()
 
-            # TODO: send pos to the server
+            # send pos to the server
+            try:
+                game = n.send(str(pos))
+            except:
+                print("pos: couldn't get game")
+                break
 
             # paddle after measurement
             level.right_paddle.rect.y = pos * ball.screenheight/(2**scene.qubit_num)
