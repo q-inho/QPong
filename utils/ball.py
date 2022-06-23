@@ -101,11 +101,14 @@ class Ball(pygame.sprite.Sprite):
     # 1 = comp, 2 = player, none = 0
     def action(self):
 
+        winner = -1
+
         if self.x < self.left_edge:
             # reset the ball when it reaches beyond left edge
             self.reset()
             self.sound.lost_sound.play(3)
             self.score.update(1)
+            winner = 1
 
         elif self.left_edge + 10 * self.width_unit <= self.x < self.left_edge + 12 * self.width_unit:
             # measure the ball when it reaches the left measurement zone
@@ -130,11 +133,14 @@ class Ball(pygame.sprite.Sprite):
             self.reset()
             self.sound.lost_sound.play(3)
             self.score.update(0)
+            winner = 0
 
         else:
             # reset flags and do nothing when the ball is outside measurement and bounce zone
             self.ball_action = NOTHING
             self.measure_flag = NO
+
+        return winner
 
     def check_score(self, player):
         return self.score.get_score(player)

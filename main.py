@@ -30,6 +30,8 @@ from utils.parameters import WINDOW_SIZE, CLASSICAL_COMPUTER, QUANTUM_COMPUTER, 
     WIN_SCORE, WIDTH_UNIT, MEASURE_RIGHT
 from utils.colors import BLACK
 
+from network import Network
+
 if not pygame.font:
     print('Warning, fonts disabled')
 if not pygame.mixer:
@@ -149,8 +151,11 @@ def main():
         input.handle_input(level, screen, scene)
 
         # check ball location and decide what to do
-        # TODO: update game score
-        ball.action()
+        winner = ball.action()
+        
+        # update game score
+        if winner != -1:
+            game = n.send("update")
 
         if ball.ball_action == MEASURE_RIGHT:
             circuit = level.circuit_grid_model.compute_circuit()

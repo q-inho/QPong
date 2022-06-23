@@ -24,7 +24,7 @@ class Game:
         return self.pos
     
     def reset(self):
-        self.score = Score()
+        self.score.reset_score()
         self.pos = [[], []]
     
 
