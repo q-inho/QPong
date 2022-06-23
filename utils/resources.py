@@ -17,7 +17,7 @@
 import os
 
 import pygame
-from pygame.compat import geterror
+# ModuleNotFoundError: from pygame.compat import geterror
 from pygame.constants import RLEACCEL
 from utils.parameters import WIDTH_UNIT
 
@@ -31,10 +31,10 @@ def load_image(name, colorkey=None, scale=WIDTH_UNIT/13):
         image = pygame.image.load(fullname)
     except pygame.error:
         print('Cannot load image:', fullname)
-        raise SystemExit(str(geterror()))
+        raise SystemExit
     image = image.convert()
     if colorkey is not None:
-        if colorkey is -1:
+        if colorkey == -1:
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey, RLEACCEL)
     image = pygame.transform.scale(image, tuple(round(scale*x) for x in image.get_rect().size))
@@ -51,6 +51,6 @@ def load_sound(name):
         sound = pygame.mixer.Sound(fullname)
     except pygame.error:
         print('Cannot load sound: %s' % fullname)
-        raise SystemExit(str(geterror()))
+        raise SystemExit
     return sound
 
